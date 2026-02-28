@@ -1,0 +1,78 @@
+<div id="leaderboardContainer" class="card">
+  <h2>Leaderboard</h2>
+  <table id="leaderboardTable">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>User</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<style>
+#leaderboardContainer {
+  background: white;
+  padding: 25px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  max-width: 600px;
+  margin: 0 auto;
+}
+#leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+#leaderboardTable th, #leaderboardTable td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+#leaderboardTable th {
+  color: #2e7d32;
+}
+#leaderboardTable tr:nth-child(odd) {
+  background: #f9f9f9;
+}
+</style>
+
+<script>
+// Demo users and points
+let users = JSON.parse(localStorage.getItem('usersPoints')) || [
+  {name: 'Alice', points: 25},
+  {name: 'Bob', points: 40},
+  {name: 'Charlie', points: 15},
+];
+
+// Sort users by points descending
+function renderLeaderboard(){
+  users.sort((a,b)=>b.points - a.points);
+  const tbody = document.querySelector('#leaderboardTable tbody');
+  tbody.innerHTML = '';
+  users.forEach((user, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${idx+1}</td><td>${user.name}</td><td>${user.points}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Example: update points dynamically
+function addPoints(userName, pts){
+  let user = users.find(u=>u.name===userName);
+  if(!user){
+    user={name:userName, points:0};
+    users.push(user);
+  }
+  user.points += pts;
+  localStorage.setItem('usersPoints', JSON.stringify(users));
+  renderLeaderboard();
+}
+
+renderLeaderboard();
+
+// Example: add points when logging recycling
+// addPoints('Alice', 5);
+</script>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>EcoMatch Settings</title>
+
+  <!-- Main Styles (copied from dashboard) -->
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --green:#2e7d32;
+      --green2:#66bb6a;
+      --border:#e5e7eb;
+      --shadow:0 10px 30px rgba(0,0,0,.07);
+      --radius:18px;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+
+    body{
+      display:flex;
+      min-height:100vh;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .main-content{
+      flex:1;
+      padding:28px 60px 40px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .title h1{
+      margin:0;
+      font-size:32px;
+      color:var(--green);
+      letter-spacing:.3px;
+    }
+    .title p{
+      margin-top:6px;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+    .card h3{
+      margin-bottom:14px;
+      font-size:18px;
+      color:var(--text);
+    }
+
+    /* Dark mode toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+      margin-right: 10px;
+    }
+
+    .switch input { display:none; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      border-radius: 34px;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: var(--green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+  </style>
+</head>
+
+<body>
+
+  {% include 'sidebar.html' %} <!-- Sidebar included here -->
+
+  <div class="main-content">
+    <div class="title">
+      <h1>Settings</h1>
+      <p>Manage your account and app preferences.</p>
+    </div>
+
+    <div class="card">
+      <h3>Appearance</h3>
+      <label class="switch">
+        <input type="checkbox" id="darkToggle">
+        <span class="slider"></span>
+      </label>
+      <span>Dark Mode</span>
+    </div>
+  </div>
+
+  <script src="darkmode.js"></script>
+</body>
+</html>

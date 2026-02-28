@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO₂ Savings Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ===== General Body ===== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  background: #f5f7fa;
+  color: #333;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 220px;
+  background: linear-gradient(180deg, #2e7d32, #66bb6a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 15px;
+  height: 100vh;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  border-radius: 0 15px 15px 0;
+}
+.sidebar h2 { margin-bottom: 40px; text-align: center; font-size: 1.5rem; letter-spacing: 1px; }
+.nav-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: left;
+  transition: 0.3s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.25); }
+.nav-btn.active { background: rgba(255,255,255,0.35); font-weight: bold; }
+
+/* ===== Content ===== */
+.content-wrapper {
+  flex: 1;
+  padding: 30px 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.content-wrapper h1 {
+  color: #2e7d32;
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+/* ===== Main Area ===== */
+main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* ===== Form Card ===== */
+#formContainer {
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  width: 300px;
+  transition: transform 0.2s;
+}
+#formContainer:hover { transform: translateY(-3px); }
+#formContainer h2 { text-align: center; color: #2e7d32; margin-bottom: 15px; }
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+button { background-color: #66bb6a; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+button:hover { background-color: #4caf50; }
+
+/* ===== Chart Card ===== */
+#chartContainer {
+  flex: 1;
+  max-width: 600px;
+  max-height: 300px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  overflow-x: auto;
+}
+#chartCanvas {
+  width: 600px;
+  height: 250px;
+}
+
+/* ===== CO2 Info ===== */
+.co2Stats {
+  background-color: #e8f5e9;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2e7d32;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <a href="#" class="nav-btn">Home</a>
+  <a href="#" class="nav-btn">Matching</a>
+  <a href="#" class="nav-btn active">CO₂ Tracker</a>
+  <a href="#" class="nav-btn">Settings</a>
+</div>
+
+<div class="content-wrapper">
+  <h1>CO₂ Savings Tracker</h1>
+  <main>
+    <!-- Form Card -->
+    <div id="formContainer">
+      <h2>Log Plastic Recycling</h2>
+      <form id="co2Form">
+        <label for="plasticType">Plastic Item:</label>
+        <select id="plasticType" required>
+          <option value="">--Select Item--</option>
+          <option value="Plastic Bottle">Plastic Bottle</option>
+          <option value="Plastic Bag">Plastic Bag</option>
+          <option value="Plastic Container">Plastic Container</option>
+        </select>
+        <label for="plasticAmount">Amount (kg):</label>
+        <input type="number" id="plasticAmount" min="0.1" step="0.1" required>
+        <button type="submit">Add Recycling</button>
+      </form>
+      <div class="co2Stats">Total CO₂ Saved: <span id="co2Saved">0</span> kg</div>
+    </div>
+
+    <!-- Chart Card -->
+    <div id="chartContainer">
+      <h2>Daily CO₂ Savings</h2>
+      <canvas id="chartCanvas"></canvas>
+    </div>
+  </main>
+</div>
+
+<script>
+// ===== Constants =====
+const CO2_PER_KG_PLASTIC = 2.5; // kg CO2 saved per kg plastic recycled (example value)
+const ctx = document.getElementById('chartCanvas').getContext('2d');
+const co2Form = document.getElementById('co2Form');
+const co2SavedEl = document.getElementById('co2Saved');
+
+let co2Logs = JSON.parse(localStorage.getItem('co2Logs')) || [];
+
+// Chart.js chart
+const co2Chart = new Chart(ctx,{
+  type:'bar',
+  data:{ labels:[], datasets:[{label:'CO₂ Saved (kg)', data:[], backgroundColor:'#42a5f5', barThickness:8, maxBarThickness:12 }] },
+  options:{
+    responsive:false,
+    maintainAspectRatio:true,
+    scales:{ x:{title:{display:true,text:'Date'}}, y:{beginAtZero:true,title:{display:true,text:'CO₂ Saved (kg)'}} },
+    plugins:{legend:{position:'bottom'}}
+  }
+});
+
+// Update chart & stats
+function updateChart(){
+  const dates = [...new Set(co2Logs.map(log=>log.date))].sort();
+  co2Chart.data.labels = dates;
+  co2Chart.data.datasets[0].data = dates.map(d => 
+    co2Logs.filter(log => log.date===d).reduce((sum,l)=>sum+l.co2,0)
+  );
+  co2Chart.update();
+
+  const totalCO2 = co2Logs.reduce((s,l)=>s+l.co2,0);
+  co2SavedEl.textContent = totalCO2.toFixed(2);
+}
+
+// Form submission
+co2Form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const item = document.getElementById('plasticType').value;
+  const amount = parseFloat(document.getElementById('plasticAmount').value);
+  if(!item || !amount) return;
+  const date = new Date().toISOString().slice(0,10);
+  const co2 = amount * CO2_PER_KG_PLASTIC;
+  co2Logs.push({date,item,amount,co2});
+  localStorage.setItem('co2Logs',JSON.stringify(co2Logs));
+  updateChart();
+  co2Form.reset();
+});
+
+// Initial load
+updateChart();
+</script>
+
+</body>
+</html>

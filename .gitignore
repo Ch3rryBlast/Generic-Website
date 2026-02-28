@@ -1,1 +1,7 @@
 static/.env
+
+# Local runtime / generated files
+flask_session/
+*.db
+static/.env
+.env

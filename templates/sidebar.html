@@ -1,0 +1,234 @@
+<!-- ===== Shared Sidebar Include ===== -->
+<style>
+:root { --sidebar-width: 230px; }
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: #1f2937;
+  color: white;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 1000;
+  box-shadow: 8px 0 25px rgba(0,0,0,.15);
+}
+.sidebar-open .sidebar { transform: translateX(0); }
+.sidebar h2 { margin: 0 0 30px; font-size: 20px; text-align: center; letter-spacing: .5px; }
+
+.nav-btn {
+  text-decoration: none;
+  display: block;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  transition: background .2s ease, transform .05s ease;
+}
+.nav-btn:hover  { background: rgba(255,255,255,0.08); }
+.nav-btn:active { transform: translateY(1px); }
+.nav-btn.active { background: rgba(255,255,255,0.12); }
+
+.sidebar-open .main-content,
+.sidebar-open .content-wrapper,
+.sidebar-open .content { margin-left: var(--sidebar-width); transition: margin-left 0.25s ease; }
+
+#sidebarToggle {
+  position: fixed; top: 16px; left: 16px; z-index: 2000;
+  background: #1f2937; color: white; border: none;
+  width: 42px; height: 42px; border-radius: 10px;
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,.15); transition: .2s;
+}
+#sidebarToggle:hover { background: #374151; }
+
+#signInBtn {
+  position: fixed; top: 16px; right: 20px; z-index: 2000;
+  background: #4285F4; color: white; border: none;
+  padding: 9px 20px; border-radius: 20px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(66,133,244,0.35);
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  display: flex; align-items: center; gap: 7px;
+}
+#signInBtn:hover { background: #3367d6; transform: scale(1.04); }
+#signInBtn.signed-in { background: #1b7a43; }
+#signInBtn.signed-in:hover { background: #166535; }
+
+#userDropdown {
+  display: none;
+  position: fixed; top: 58px; right: 20px; z-index: 2000;
+  background: white; border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  padding: 8px 0; min-width: 200px;
+  animation: popIn 0.15s ease;
+}
+#userDropdown.active { display: block; }
+.dropdown-email {
+  padding: 10px 18px 6px;
+  font-size: 12px; color: #888;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 4px;
+}
+.dropdown-item {
+  display: block; padding: 9px 18px;
+  font-size: 14px; color: #333; cursor: pointer;
+  border: none; background: none;
+  width: 100%; text-align: left;
+  transition: background 0.15s; text-decoration: none;
+}
+.dropdown-item:hover { background: #f5f5f5; }
+.dropdown-item.danger { color: #dc2626; }
+
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 9999;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(5px);
+}
+.modal-overlay.active { display: flex; }
+
+.modal-box {
+  background: white; border-radius: 18px;
+  padding: 48px 40px 40px; text-align: center;
+  width: 360px; max-width: 90vw; position: relative;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.modal-close {
+  position: absolute; top: 14px; right: 18px;
+  background: none; border: none; font-size: 22px;
+  cursor: pointer; color: #aaa; padding: 2px 6px;
+  border-radius: 6px; transition: color 0.15s, background 0.15s;
+}
+.modal-close:hover { color: #333; background: #f0f0f0; }
+.modal-icon  { font-size: 42px; margin-bottom: 10px; }
+.modal-box h2 { margin: 0 0 8px; font-size: 24px; color: #111; font-weight: 700; }
+.modal-box p  { color: #666; font-size: 14px; margin: 0 0 28px; line-height: 1.5; }
+
+.google-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: white; border: 1.5px solid #dadce0;
+  padding: 12px 20px; border-radius: 8px;
+  text-decoration: none; color: #3c4043;
+  font-weight: 500; font-size: 15px;
+  justify-content: center;
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.15s;
+  width: 100%; box-sizing: border-box;
+}
+.google-btn:hover { box-shadow: 0 2px 14px rgba(0,0,0,0.12); border-color: #bbb; background: #fafafa; }
+.google-btn img   { width: 20px; height: 20px; }
+
+body.dark.modal-box           { background: #1e293b; }
+body.dark.modal-box h2        { color: #f1f5f9; }
+body.dark.modal-box p         { color: #94a3b8; }
+body.dark.modal-close         { color: #64748b; }
+body.dark.modal-close:hover   { color: #f1f5f9; background: #334155; }
+body.dark.google-btn          { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+body.dark #userDropdown        { background: #1e293b; }
+body.dark.dropdown-email      { color: #64748b; border-color: #334155; }
+body.dark.dropdown-item       { color: #f1f5f9; }
+body.dark.dropdown-item:hover { background: #334155; }
+</style>
+
+<button id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+<button id="signInBtn" onclick="handleSignInClick()">Sign In</button>
+
+<div id="userDropdown">
+  <div class="dropdown-email" id="dropdownEmail"></div>
+  <button class="dropdown-item danger" onclick="handleLogout()">Sign Out</button>
+</div>
+
+<div id="signInModal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSignIn()">✕</button>
+    <div class="modal-icon">🌿</div>
+    <h2>Welcome to EcoMatch</h2>
+    <p>Sign in to track your recycling,<br>earn XP, and climb the leaderboard.</p>
+    <a href="/oauth/login/google" class="google-btn">
+      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" />
+      Sign in with Google
+    </a>
+  </div>
+</div>
+
+<nav class="sidebar">
+  <h2>EcoMatch</h2>
+  <a href="{{ url_for('index') }}"     class="nav-btn">🏠 Home</a>
+  <a href="{{ url_for('recycling') }}" class="nav-btn">♻️ Recycling</a>
+  <a href="{{ url_for('matching') }}"  class="nav-btn">🛒 Marketplace</a>
+  <a href="{{ url_for('settings') }}"  class="nav-btn">⚙️ Settings</a>
+</nav>
+
+<script>
+(function(){
+  document.getElementById('sidebarToggle').addEventListener('click', function(){
+    document.body.classList.toggle('sidebar-open');
+  });
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.nav-btn')) document.body.classList.remove('sidebar-open');
+  });
+})();
+
+let _signedIn = false;
+
+async function loadAuthState() {
+  try {
+    const res  = await fetch('/api/auth/me');
+    const data = await res.json();
+    const btn  = document.getElementById('signInBtn');
+    if (data.signed_in) {
+      _signedIn = true;
+      const firstName = (data.display_name || data.email || '').split(' ')[0];
+      btn.textContent = '👤 ' + firstName;
+      btn.classList.add('signed-in');
+      document.getElementById('dropdownEmail').textContent = data.email;
+    } else {
+      _signedIn = false;
+      btn.textContent = 'Sign In';
+      btn.classList.remove('signed-in');
+    }
+  } catch(e) { console.warn('Auth check failed', e); }
+}
+
+function handleSignInClick() {
+  if (_signedIn) {
+    document.getElementById('userDropdown').classList.toggle('active');
+  } else {
+    openSignIn();
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#signInBtn') && !e.target.closest('#userDropdown')) {
+    document.getElementById('userDropdown').classList.remove('active');
+  }
+});
+
+async function handleLogout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.reload();
+}
+
+function openSignIn()  { document.getElementById('signInModal').classList.add('active'); }
+function closeSignIn(e) {
+  if (!e || e.target === document.getElementById('signInModal'))
+    document.getElementById('signInModal').classList.remove('active');
+}
+
+document.getElementById('signInModal').addEventListener('click', closeSignIn);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSignIn(); });
+
+loadAuthState();
+</script>

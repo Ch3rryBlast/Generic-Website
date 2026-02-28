@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parts Marketplace</title>
+<style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  background: #f5f7fa;
+  color: #333;
+}
+.sidebar {
+  width: 220px;
+  background: linear-gradient(180deg, #2e7d32, #66bb6a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 15px;
+  height: 100vh;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  border-radius: 0 15px 15px 0;
+}
+.sidebar h2 { margin-bottom: 40px; text-align: center; font-size: 1.5rem; letter-spacing: 1px; }
+.nav-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: left;
+  transition: 0.3s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.25); }
+.nav-btn.active { background: rgba(255,255,255,0.35); font-weight: bold; }
+
+.content-wrapper {
+  flex: 1;
+  padding: 30px 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.content-wrapper h1 {
+  color: #2e7d32;
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+main {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Form Card */
+#formContainer {
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  width: 300px;
+}
+#formContainer h2 { text-align: center; color: #2e7d32; margin-bottom: 15px; }
+input, select, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+textarea { resize: vertical; }
+button { background-color: #66bb6a; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+button:hover { background-color: #4caf50; }
+
+#listingsContainer {
+  flex: 1;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.listing-card {
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+.listing-card:hover {
+  transform: translateY(-2px);
+}
+.listing-card h3 { margin: 0 0 8px 0; color: #2e7d32; }
+.listing-card p { margin: 3px 0; }
+.listing-card .small { font-size: 0.85rem; color: #666; }
+
+/* Hide non-active sections */
+.section { display: none; }
+.section.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
+  <button class="nav-btn" onclick="window.location.href='recycling.html'">Recycling</button>
+  <button class="nav-btn" onclick="window.location.href='marketplace.html'">Marketplace</button>
+  <button class="nav-btn" onclick="window.location.href='settings.html'">Settings</button>
+</div>
+
+<div class="content-wrapper">
+  <h1>Dashboard</h1>
+  
+  <!-- Home Section -->
+  <div id="home" class="section active">
+    <p>Welcome to the Parts Marketplace Home!</p>
+  </div>
+  
+  <!-- Recycling Section -->
+  <div id="recycling" class="section">
+    <p>Here you can find recycling information.</p>
+  </div>
+  
+  <!-- Marketplace Section -->
+  <div id="marketplace" class="section">
+    <main>
+      <div id="formContainer">
+        <h2>Donate a Part</h2>
+        <form id="marketForm">
+          <label for="partName">Part Name:</label>
+          <input type="text" id="partName" placeholder="e.g., Motor, Sensor" required>
+
+          <label for="partCondition">Condition:</label>
+          <select id="partCondition" required>
+            <option value="">--Select Condition--</option>
+            <option value="New">New</option>
+            <option value="Like New">Like New</option>
+            <option value="Used">Used</option>
+          </select>
+
+          <label for="partDescription">Description:</label>
+          <textarea id="partDescription" rows="3" placeholder="Add any details..."></textarea>
+
+          <button type="submit">Post Part</button>
+        </form>
+      </div>
+
+      <div id="listingsContainer"></div>
+    </main>
+  </div>
+  
+  <!-- Settings Section -->
+  <div id="settings" class="section">
+    <p>Settings will go here.</p>
+  </div>
+
+</div>
+
+<script>
+const navButtons = document.querySelectorAll('.nav-btn');
+const sections = document.querySelectorAll('.section');
+const contentHeader = document.querySelector('.content-wrapper h1');
+
+navButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Remove active from all buttons
+    navButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // Show the correct section
+    const target = btn.getAttribute('data-target');
+    sections.forEach(sec => sec.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+
+    // Update header
+    contentHeader.textContent = btn.textContent;
+  });
+});
+
+// Marketplace functionality
+const marketForm = document.getElementById('marketForm');
+const listingsContainer = document.getElementById('listingsContainer');
+let listings = JSON.parse(localStorage.getItem('marketListings')) || [];
+
+function renderListings(){
+  listingsContainer.innerHTML = '';
+  listings.slice().reverse().forEach(listing=>{
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.innerHTML = `
+      <h3>${listing.name}</h3>
+      <p class="small">Condition: ${listing.condition}</p>
+      <p>${listing.description || 'No description provided'}</p>
+      <p class="small">Posted on: ${listing.date}</p>
+    `;
+    listingsContainer.appendChild(card);
+  });
+}
+
+marketForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = document.getElementById('partName').value.trim();
+  const condition = document.getElementById('partCondition').value;
+  const description = document.getElementById('partDescription').value.trim();
+  const date = new Date().toLocaleDateString();
+
+  if(!name || !condition) return;
+
+  listings.push({name, condition, description, date});
+  localStorage.setItem('marketListings', JSON.stringify(listings));
+  renderListings();
+  marketForm.reset();
+});
+
+renderListings();
+</script>
+
+</body>
+</html>

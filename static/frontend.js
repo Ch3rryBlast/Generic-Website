@@ -1,21 +1,11 @@
-import {useState, useContext, createContext} from 'react';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 
-const CounterContext = createContext();
-
-export function CounterProvider(props) {
-  const [state, setState] = useState({
-    edited: false,
-    hot: false
-  });
-  return (
-    <CounterContext.Provider
-      value={{
-        state,
-        setState
-      }}
-    >
-      {props.children}
-    </CounterContext.Provider>
-  );
-}
+  

@@ -1,4 +1,5 @@
-1)
+1) Dashboard
+    - h
 
 
 
@@ -6,5 +7,9 @@
     - Has dropdown options for common items to tell you how to recyle them
     - We can send them to a wiki on how to recyle
     - Tracks recyling
+
+
+3) Recyling matcher
+- find others near the person in order 
 
 

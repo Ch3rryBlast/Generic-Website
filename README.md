@@ -1,2 +1,2 @@
 # Generic-Website
-#goon to furries
+#goon
